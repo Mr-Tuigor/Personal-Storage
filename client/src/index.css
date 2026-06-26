@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base Styles ─────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-950 text-surface-100 font-sans antialiased;
+    min-height: 100vh;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-500;
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-white;
+  }
+}
+
+/* ─── Component Styles ────────────────────────────────────────── */
+
+@layer components {
+  /* Glass card */
+  .glass-card {
+    @apply bg-surface-900/60 backdrop-blur-xl border border-surface-700/50 rounded-2xl;
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 ease-out;
+  }
+
+  .glass-card-hover:hover {
+    @apply border-brand-500/30 -translate-y-0.5;
+    box-shadow: 0 8px 32px -4px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.1) inset;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 via-purple-400 to-fuchsia-400;
+  }
+
+  /* Gradient button */
+  .btn-primary {
+    @apply relative px-5 py-2.5 rounded-xl font-semibold text-white text-sm
+           bg-gradient-to-r from-brand-600 to-purple-600
+           hover:from-brand-500 hover:to-purple-500
+           active:from-brand-700 active:to-purple-700
+           transition-all duration-200 ease-out
+           shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-brand-500/25;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-surface-800 text-surface-200 border border-surface-700
+           hover:bg-surface-700 hover:text-white hover:border-surface-600
+           active:bg-surface-800
+           transition-all duration-200 ease-out;
+  }
+
+  .btn-danger {
+    @apply px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-red-500/10 text-red-400 border border-red-500/20
+           hover:bg-red-500/20 hover:border-red-500/40
+           transition-all duration-200 ease-out;
+  }
+
+  .btn-ghost {
+    @apply px-3 py-2 rounded-lg font-medium text-sm
+           text-surface-400 hover:text-white hover:bg-surface-800
+           transition-all duration-200;
+  }
+
+  /* Input */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl text-sm text-white
+           bg-surface-800/80 border border-surface-700
+           placeholder-surface-500
+           focus:outline-none focus:border-brand-500/50 focus:ring-2 focus:ring-brand-500/20
+           transition-all duration-200;
+  }
+
+  /* Sidebar nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+           text-surface-400 hover:text-white hover:bg-surface-800/80
+           transition-all duration-200 cursor-pointer;
+  }
+
+  .nav-item-active {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium
+           text-white bg-brand-600/20 border border-brand-500/20;
+    box-shadow: 0 0 20px -4px rgba(99, 102, 241, 0.3);
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply glass-card p-6 flex flex-col gap-2 animate-fade-in;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+           bg-brand-500/15 text-brand-300 border border-brand-500/20;
+  }
+
+  /* Floating panel (for notes editor) */
+  .floating-panel {
+    @apply fixed glass-card overflow-hidden;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.5);
+    resize: both;
+    min-width: 400px;
+    min-height: 350px;
+  }
+
+  /* Music player bar */
+  .player-bar {
+    @apply fixed bottom-0 left-0 right-0 glass-card rounded-none border-t border-surface-700/50;
+    backdrop-filter: blur(24px) saturate(180%);
+    z-index: 50;
+  }
+}
+
+/* ─── Utility Styles ──────────────────────────────────────────── */
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .mask-gradient {
+    mask-image: linear-gradient(to bottom, black 60%, transparent);
+  }
+}
