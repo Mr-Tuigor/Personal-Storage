@@ -116,3 +116,25 @@ Visit `http://localhost:5173` in your browser to start using the app!
 - Passwords stored in the Vault are securely encrypted on the backend using `AES-256-GCM`. The raw passwords are never saved to the database in plain text.
 - User authentication is handled securely via signed JWTs.
 - Cloudflare R2 presigned URLs are securely generated and strictly scoped, ensuring only authorized users can upload to or download from their specific isolated paths within the bucket.
+
+
+## Screenshots
+
+
+<img src="assets/Screenshot 2026-06-26 130924.png"/>
+<br>
+
+<img src="aassets/Screenshot 2026-06-26 130939.png"/>
+<br>
+
+<img src="assets/Screenshot 2026-06-26 130950.png"/>
+<br>
+
+<img src="assets/Screenshot 2026-06-26 131014.png"/>
+<br>
+
+<img src="assets/Screenshot 2026-06-26 131023.png"/>
+<br>
+
+<img src="assets/Screenshot 2026-06-26 131036.png"/>
+<br>
