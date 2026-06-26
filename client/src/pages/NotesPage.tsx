@@ -189,7 +189,7 @@ const FloatingEditor: React.FC<FloatingEditorProps> = ({ note, onSave, onClose }
 const NotesPage: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [loading, setLoading] = useState(true);
   const [editorNote, setEditorNote] = useState<Note | null | 'new'>(null);
 

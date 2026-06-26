@@ -1,15 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Header from '../components/layout/Header';
 import { getPasswords, getPasswordById, createPassword, updatePassword, deletePassword } from '../api/passwords.api';
-import type { PasswordEntry, PasswordDecrypted, PaginationMeta } from '../types';
-import { formatDate } from '../utils/formatters';
+import type { PasswordEntry } from '../types';
 import { HiOutlinePlus, HiOutlineTrash, HiOutlineEye, HiOutlineEyeOff, HiOutlineClipboardCopy, HiOutlinePencil, HiOutlineLockClosed, HiOutlineX } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 const VaultPage: React.FC = () => {
   const [entries, setEntries] = useState<PasswordEntry[]>([]);
-  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [loading, setLoading] = useState(true);
   const [revealedId, setRevealedId] = useState<string | null>(null);
   const [revealedPassword, setRevealedPassword] = useState<string>('');
@@ -28,7 +26,6 @@ const VaultPage: React.FC = () => {
     try {
       const res = await getPasswords(p);
       setEntries(res.data.data);
-      setPagination(res.data.pagination);
     } catch { toast.error('Failed to load passwords'); }
     finally { setLoading(false); }
   }, []);

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Header from '../components/layout/Header';
 import { getImages, uploadImage, deleteImage, getImageAlbums, createImageAlbum, deleteImageAlbum } from '../api/images.api';
 import type { ImageItem, ImageAlbum, PaginationMeta } from '../types';
-import { formatFileSize, formatDate } from '../utils/formatters';
 import { HiOutlineUpload, HiOutlineTrash, HiOutlinePlus, HiOutlineX, HiOutlinePhotograph, HiOutlineCollection } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 

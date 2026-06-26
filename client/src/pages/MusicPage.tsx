@@ -2,14 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Header from '../components/layout/Header';
 import { getMusicAlbums, createMusicAlbum, deleteMusicAlbum, uploadTrack, deleteTrack } from '../api/music.api';
 import { usePlayer } from '../context/PlayerContext';
-import type { MusicAlbum, Track, PaginationMeta } from '../types';
+import type { MusicAlbum } from '../types';
 import { formatDuration } from '../utils/formatters';
 import { HiOutlinePlus, HiOutlineTrash, HiOutlineUpload, HiOutlinePlay, HiOutlineMusicNote, HiOutlineChevronDown, HiOutlineChevronUp } from 'react-icons/hi';
 import toast from 'react-hot-toast';
 
 const MusicPage: React.FC = () => {
   const [albums, setAlbums] = useState<MusicAlbum[]>([]);
-  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [expandedAlbum, setExpandedAlbum] = useState<string | null>(null);
@@ -23,7 +22,6 @@ const MusicPage: React.FC = () => {
     try {
       const res = await getMusicAlbums(p);
       setAlbums(res.data.data);
-      setPagination(res.data.pagination);
     } catch { toast.error('Failed to load albums'); }
     finally { setLoading(false); }
   }, []);
@@ -66,7 +64,6 @@ const MusicPage: React.FC = () => {
       // Fetch albums in the background without causing a loading skeleton
       const res = await getMusicAlbums(page);
       setAlbums(res.data.data);
-      setPagination(res.data.pagination);
     } catch {
       toast.error('Upload failed');
     } finally {

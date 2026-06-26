@@ -26,7 +26,7 @@ export const uploadDocument = async (file: File, folderId?: string) => {
     folderId,
   });
 
-  const { document, presignedUrl } = res.data.data!;
+  const { presignedUrl } = res.data.data!;
 
   // 2. Upload file directly to R2 using PUT
   await axios.put(presignedUrl, file, {
