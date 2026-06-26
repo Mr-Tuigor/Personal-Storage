@@ -124,7 +124,7 @@ Visit `http://localhost:5173` in your browser to start using the app!
 <img src="assets/Screenshot 2026-06-26 130924.png"/>
 <br>
 
-<img src="aassets/Screenshot 2026-06-26 130939.png"/>
+<img src="assets/Screenshot 2026-06-26 130939.png"/>
 <br>
 
 <img src="assets/Screenshot 2026-06-26 130950.png"/>
