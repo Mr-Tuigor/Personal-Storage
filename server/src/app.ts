@@ -18,6 +18,9 @@ import noteRoutes from './routes/note.routes';
 
 const app = express();
 
+// Trust reverse proxy (required for Render/Heroku and express-rate-limit)
+app.set('trust proxy', 1);
+
 // ─── Core Middleware ─────────────────────────────────────────────
 
 app.use(helmet());
