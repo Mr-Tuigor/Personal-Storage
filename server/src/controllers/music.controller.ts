@@ -271,3 +271,40 @@ export const getTrackStreamUrl = async (
     next(error);
   }
 };
+
+const moveTrackSchema = z.object({
+  newAlbumId: z.string().min(1, 'New Album ID is required'),
+});
+
+export const moveTrack = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.userId!;
+    const { id: albumId, trackId } = req.params;
+    const { newAlbumId } = moveTrackSchema.parse(req.body);
+
+    const track = await MusicTrack.findOne({ _id: trackId, albumId, userId });
+
+    if (!track) {
+      sendError(res, 'Track not found.', 404);
+      return;
+    }
+    
+    const newAlbum = await MusicAlbum.findOne({ _id: newAlbumId, userId });
+    
+    if (!newAlbum) {
+      sendError(res, 'New album not found.', 404);
+      return;
+    }
+
+    track.albumId = newAlbum._id;
+    await track.save();
+
+    sendMessage(res, 'Track moved successfully.');
+  } catch (error) {
+    next(error);
+  }
+};

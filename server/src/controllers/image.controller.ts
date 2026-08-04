@@ -180,3 +180,42 @@ export const deleteImage = async (
     next(error);
   }
 };
+
+const moveImageSchema = z.object({
+  newAlbumId: z.string().optional().nullable(),
+});
+
+export const moveImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.userId!;
+    const { id } = req.params;
+    const { newAlbumId } = moveImageSchema.parse(req.body);
+
+    const image = await Image.findOne({ _id: id, userId });
+
+    if (!image) {
+      sendError(res, 'Image not found.', 404);
+      return;
+    }
+
+    if (newAlbumId) {
+      const album = await ImageAlbum.findOne({ _id: newAlbumId, userId });
+      if (!album) {
+        sendError(res, 'Album not found.', 404);
+        return;
+      }
+      image.albumId = album._id as any;
+    } else {
+      image.albumId = null as any;
+    }
+
+    await image.save();
+    sendMessage(res, 'Image moved successfully.');
+  } catch (error) {
+    next(error);
+  }
+};

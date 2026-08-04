@@ -66,3 +66,6 @@ export const deleteTrack = (albumId: string, trackId: string) =>
 
 export const getTrackStreamUrl = (albumId: string, trackId: string) =>
   api.get<ApiResponse<{ url: string; trackName: string }>>(`/music/albums/${albumId}/tracks/${trackId}/stream`);
+
+export const moveTrack = (albumId: string, trackId: string, newAlbumId: string) =>
+  api.put<ApiResponse>(`/music/albums/${albumId}/tracks/${trackId}/move`, { newAlbumId });

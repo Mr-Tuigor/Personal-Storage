@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Header from '../components/layout/Header';
-import { getImages, uploadImage, deleteImage, getImageAlbums, createImageAlbum, deleteImageAlbum } from '../api/images.api';
+import { getImages, uploadImage, deleteImage, getImageAlbums, createImageAlbum, deleteImageAlbum, moveImage } from '../api/images.api';
 import type { ImageItem, ImageAlbum, PaginationMeta } from '../types';
 import { HiOutlineUpload, HiOutlineTrash, HiOutlinePlus, HiOutlineX, HiOutlinePhotograph, HiOutlineCollection } from 'react-icons/hi';
 import toast from 'react-hot-toast';
@@ -100,6 +100,18 @@ const GalleryPage: React.FC = () => {
     } catch { toast.error('Failed to delete'); }
   };
 
+  const handleMoveImage = async (id: string, newAlbumId: string | null) => {
+    try {
+      await moveImage(id, newAlbumId);
+      toast.success('Image moved');
+      setPage(1); setImages([]);
+      fetchImages(1, selectedAlbum);
+      fetchAlbums();
+    } catch {
+      toast.error('Failed to move image');
+    }
+  };
+
   return (
     <div>
       <Header title="Image Gallery" />
@@ -161,13 +173,31 @@ const GalleryPage: React.FC = () => {
                   loading="lazy"
                   onClick={() => setLightbox(img.r2Url)}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
-                  <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
-                    <span className="text-xs text-white/80 truncate">{img.originalName}</span>
-                    <button onClick={(e) => { e.stopPropagation(); handleDeleteImage(img._id); }} className="text-red-400 hover:text-red-300 p-1">
-                      <HiOutlineTrash className="w-4 h-4" />
-                    </button>
+                  <div className="absolute top-2 right-2 flex flex-col items-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <select 
+                      className="bg-black/50 backdrop-blur-md text-xs text-white border-none outline-none cursor-pointer rounded px-1 py-0.5"
+                      onChange={(e) => {
+                        const val = e.target.value === "none" ? null : e.target.value;
+                        handleMoveImage(img._id, val);
+                        e.target.value = "";
+                      }}
+                      defaultValue=""
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <option value="" disabled>Move...</option>
+                      <option value="none">No Album</option>
+                      {albums.filter(a => a._id !== img.albumId).map(a => (
+                        <option key={a._id} value={a._id}>{a.albumName}</option>
+                      ))}
+                    </select>
                   </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-xl pointer-events-none">
+                    <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between pointer-events-auto">
+                      <span className="text-xs text-white/80 truncate">{img.originalName}</span>
+                      <button onClick={(e) => { e.stopPropagation(); handleDeleteImage(img._id); }} className="text-red-400 hover:text-red-300 p-1">
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
                 </div>
               </div>
             ))}

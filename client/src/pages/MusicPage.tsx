@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Header from '../components/layout/Header';
-import { getMusicAlbums, createMusicAlbum, deleteMusicAlbum, uploadTrack, deleteTrack } from '../api/music.api';
+import { getMusicAlbums, createMusicAlbum, deleteMusicAlbum, uploadTrack, deleteTrack, moveTrack } from '../api/music.api';
 import { usePlayer } from '../context/PlayerContext';
 import type { MusicAlbum } from '../types';
 import { formatDuration } from '../utils/formatters';
@@ -50,17 +50,23 @@ const MusicPage: React.FC = () => {
   const [uploadProgress, setUploadProgress] = useState<{ [albumId: string]: number }>({});
 
   const handleUploadTrack = async (albumId: string, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const trackName = file.name.replace(/\.[^.]+$/, '');
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     
     setUploadProgress((prev) => ({ ...prev, [albumId]: 0 }));
     
     try {
-      await uploadTrack(albumId, file, trackName, undefined, (progress) => {
-        setUploadProgress((prev) => ({ ...prev, [albumId]: progress }));
-      });
-      toast.success('Track uploaded');
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const trackName = file.name.replace(/\.[^.]+$/, '');
+        
+        await uploadTrack(albumId, file, trackName, undefined, (progress) => {
+          const baseProgress = (i / files.length) * 100;
+          const currentProgress = (progress / files.length);
+          setUploadProgress((prev) => ({ ...prev, [albumId]: Math.round(baseProgress + currentProgress) }));
+        });
+      }
+      toast.success(files.length > 1 ? `${files.length} tracks uploaded` : 'Track uploaded');
       // Fetch albums in the background without causing a loading skeleton
       const res = await getMusicAlbums(page);
       setAlbums(res.data.data);
@@ -82,6 +88,16 @@ const MusicPage: React.FC = () => {
       toast.success('Track deleted');
       fetchAlbums(page);
     } catch { toast.error('Failed to delete track'); }
+  };
+
+  const handleMoveTrack = async (albumId: string, trackId: string, newAlbumId: string) => {
+    try {
+      await moveTrack(albumId, trackId, newAlbumId);
+      toast.success('Track moved');
+      fetchAlbums(page);
+    } catch {
+      toast.error('Failed to move track');
+    }
   };
 
   return (
@@ -160,6 +176,23 @@ const MusicPage: React.FC = () => {
                             <span className="text-xs text-surface-500 w-5">{idx + 1}</span>
                             <span className="flex-1 text-sm text-surface-200 truncate">{track.trackName}</span>
                             <span className="text-xs text-surface-500">{track.duration ? formatDuration(track.duration) : '--:--'}</span>
+                            
+                            <select 
+                              className="bg-surface-800 text-xs text-surface-300 border-none outline-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity rounded px-1"
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  handleMoveTrack(album._id, track._id, e.target.value);
+                                  e.target.value = "";
+                                }
+                              }}
+                              defaultValue=""
+                            >
+                              <option value="" disabled>Move to...</option>
+                              {albums.filter(a => a._id !== album._id).map(a => (
+                                <option key={a._id} value={a._id}>{a.albumName}</option>
+                              ))}
+                            </select>
+
                             <button onClick={() => handleDeleteTrack(album._id, track._id)} className="text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-opacity">
                               <HiOutlineTrash className="w-4 h-4" />
                             </button>
@@ -185,7 +218,7 @@ const MusicPage: React.FC = () => {
                       <label className="flex items-center justify-center gap-2 p-3 border border-dashed border-surface-700 rounded-lg cursor-pointer hover:border-brand-500/50 transition-colors">
                         <HiOutlineUpload className="w-4 h-4 text-surface-400" />
                         <span className="text-sm text-surface-400">Add track</span>
-                        <input type="file" accept="audio/*" onChange={(e) => handleUploadTrack(album._id, e)} className="hidden" />
+                        <input type="file" multiple accept="audio/*" onChange={(e) => handleUploadTrack(album._id, e)} className="hidden" />
                       </label>
                     )}
                   </div>

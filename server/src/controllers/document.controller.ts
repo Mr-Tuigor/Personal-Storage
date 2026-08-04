@@ -139,12 +139,16 @@ export const uploadDocument = async (
     }
 
     const uniqueId = crypto.randomUUID();
-    const r2Key = `documents/${userId}/${uniqueId}-${filename}`;
+    // const r2Key = `documents/${userId}/${uniqueId}-${filename}`;
+
+    // Sanitize filename to prevent S3/R2 "NoSuchKey" errors with special characters
+    const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    const r2Key = `documents/${userId}/${uniqueId}-${sanitizedFilename}`;
 
     const presignedUrl = await getPresignedPutUrl(r2Key, contentType);
 
     const r2Url = `${process.env.R2_PUBLIC_URL || ''}/${r2Key}`;
-    
+
     const doc = await DocumentModel.create({
       userId,
       folderId: folderId || undefined,
@@ -200,6 +204,45 @@ export const downloadDocument = async (
 
     const url = await getPresignedDownloadUrl(doc.r2Key);
     sendSuccess(res, { url, originalName: doc.originalName });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const moveDocumentSchema = z.object({
+  newFolderId: z.string().optional().nullable(),
+});
+
+export const moveDocument = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const userId = req.userId!;
+    const { id } = req.params;
+    const { newFolderId } = moveDocumentSchema.parse(req.body);
+
+    const doc = await DocumentModel.findOne({ _id: id, userId });
+
+    if (!doc) {
+      sendError(res, 'Document not found.', 404);
+      return;
+    }
+
+    if (newFolderId) {
+      const folder = await DocumentFolder.findOne({ _id: newFolderId, userId });
+      if (!folder) {
+        sendError(res, 'Folder not found.', 404);
+        return;
+      }
+      doc.folderId = folder._id as any;
+    } else {
+      doc.folderId = undefined;
+    }
+
+    await doc.save();
+    sendMessage(res, 'Document moved successfully.');
   } catch (error) {
     next(error);
   }

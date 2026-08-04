@@ -8,6 +8,7 @@ import {
   getDocumentFolders,
   createDocumentFolder,
   deleteDocumentFolder,
+  moveDocument,
 } from '../api/documents.api';
 import type { Document, DocumentFolder, PaginationMeta } from '../types';
 import { formatFileSize, formatDate, getFileIcon } from '../utils/formatters';
@@ -121,6 +122,17 @@ const FilesPage: React.FC = () => {
       fetchFolders();
     } catch {
       toast.error('Delete failed');
+    }
+  };
+
+  const handleMoveDocument = async (id: string, newFolderId: string | null) => {
+    try {
+      await moveDocument(id, newFolderId);
+      toast.success('File moved');
+      fetchDocs(page, selectedFolderId);
+      fetchFolders();
+    } catch {
+      toast.error('Failed to move file');
     }
   };
 
@@ -250,6 +262,22 @@ const FilesPage: React.FC = () => {
                   <p className="text-xs text-surface-500">{formatFileSize(doc.fileSize)} · {formatDate(doc.createdAt)}</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <select
+                    className="bg-surface-800 text-xs text-surface-300 border-none outline-none cursor-pointer rounded px-2 py-1 mr-2 transition-colors hover:bg-surface-700"
+                    onChange={(e) => {
+                      const val = e.target.value === "none" ? null : e.target.value;
+                      handleMoveDocument(doc._id, val);
+                      e.target.value = "";
+                    }}
+                    defaultValue=""
+                  >
+                    <option value="" disabled>Move...</option>
+                    <option value="none">No Folder</option>
+                    {folders.filter(f => f._id !== doc.folderId).map(f => (
+                      <option key={f._id} value={f._id}>{f.folderName}</option>
+                    ))}
+                  </select>
+
                   <button onClick={() => handleView(doc)} className="btn-ghost" title="View">
                     <HiOutlineEye className="w-4 h-4" />
                   </button>

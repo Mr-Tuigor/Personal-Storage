@@ -41,3 +41,6 @@ export const uploadImage = async (file: File, albumId?: string) => {
 
 export const deleteImage = (id: string) =>
   api.delete<ApiResponse>(`/images/${id}`);
+
+export const moveImage = (id: string, newAlbumId: string | null) =>
+  api.put<ApiResponse>(`/images/${id}/move`, { newAlbumId });

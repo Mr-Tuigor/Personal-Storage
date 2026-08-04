@@ -9,6 +9,7 @@ import {
   createTrack,
   deleteTrack,
   getTrackStreamUrl,
+  moveTrack,
 } from '../controllers/music.controller';
 import { authenticate } from '../middleware/auth';
 
@@ -28,6 +29,7 @@ router.delete('/albums/:id', deleteAlbum);
 router.post('/albums/:id/tracks/presigned', authenticate, getPresignedTrackData);
 router.post('/albums/:id/tracks', authenticate, createTrack);
 router.delete('/albums/:id/tracks/:trackId', deleteTrack);
+router.put('/albums/:id/tracks/:trackId/move', authenticate, moveTrack);
 router.get('/albums/:id/tracks/:trackId/stream', getTrackStreamUrl);
 
 export default router;

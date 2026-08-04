@@ -7,6 +7,7 @@ import {
   getDocumentFolders,
   createDocumentFolder,
   deleteDocumentFolder,
+  moveDocument,
 } from '../controllers/document.controller';
 import { authenticate } from '../middleware/auth';
 
@@ -24,5 +25,6 @@ router.get('/', getDocuments);
 router.post('/upload', uploadDocument);
 router.get('/:id/download', downloadDocument);
 router.delete('/:id', deleteDocument);
+router.put('/:id/move', moveDocument);
 
 export default router;

@@ -44,3 +44,6 @@ export const downloadDocument = (id: string) =>
 
 export const deleteDocument = (id: string) =>
   api.delete<ApiResponse>(`/documents/${id}`);
+
+export const moveDocument = (id: string, newFolderId: string | null) =>
+  api.put<ApiResponse>(`/documents/${id}/move`, { newFolderId });
